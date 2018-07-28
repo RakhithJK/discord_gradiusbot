@@ -11,10 +11,6 @@ session_factory = sessionmaker(bind=engine)
 Session = scoped_session(session_factory)
 session = Session()
 
-# TODO:
-# Add reason to discord chat commands
-# Test it all
-
 
 class BanPoolManager:
     def add_user_to_banpool(self, banpool_name, user_id, reason):
