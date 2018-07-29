@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from libs.banpool_configuration import BanpoolConfigManager
 
 # Setup Logging
 logger = logging.getLogger('banpool_configuration')
@@ -16,7 +17,10 @@ logger.addHandler(fh)
 
 logger.info("[Public Plugin] <banpool_configuration.py>: This plugin configures the banpool.")
 
+bcm = BanpoolConfigManager()
+
 help_string = """
+Test help string.
 """
 
 
@@ -35,10 +39,25 @@ async def action(**kwargs):
                 if split_content[1] == 'help':
                     await message.channel.send(help_string)
 
-            if len(split_content) == 3:
                 # User is setting the announcement channel
                 if split_content[1] == 'set-announce-chan':
-                    announce_chan_str = split_content[2]
+                    success = bcm.set_announce_chan(message.guild.id, message.channel.id,
+                                                    message.author.name + message.author.discriminator, message.author.id)
+
+                    if success:
+                        await message.channel.send('Successfully set announcement channel.')
+
+                    else:
+                        await message.channel.send('Was unable to set announcement channel.')
+
+                if split_content[1] == 'send-test-message':
+                    announce_chan_id = bcm.get_announce_chan(message.guild.id)
+                    target_channel = message.guild.get_channel(announce_chan_id)
+
+                    if target_channel:
+                        await target_channel.send('This is a test announcement message to the configured channel.')
+                    else:
+                        await message.channel.send('An announcement channel has not been set. Please set one with the `!bpc set-announce-chan` command in the desired channel.')
 
             if len(split_content) == 4:
                 # User wants to set a banpool level: ignore, notify, ban
@@ -46,10 +65,9 @@ async def action(**kwargs):
                     pool_name = split_content[2]
                     level = split_content[3]
 
-                    if level == 'ignore':
-                        pass
-                    elif level == 'notify':
-                        pass
-                    elif level == 'ban':
-                        pass
+                    if level in ['ignore', 'notify', 'ban']:
+                        bcm.set_pool_level(message.guild.id, pool_name, level,
+                                           message.author.name+message.author.discriminator, message.author.id)
+                    else:
+                        await message.channel.send('Unable to set pool level, please select between "ignore, notify, or ban"')
 
