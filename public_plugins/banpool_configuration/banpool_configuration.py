@@ -42,7 +42,8 @@ async def action(**kwargs):
                 # User is setting the announcement channel
                 if split_content[1] == 'set-announce-chan':
                     success = bcm.set_announce_chan(message.guild.id, message.channel.id,
-                                                    message.author.name + message.author.discriminator, message.author.id)
+                                                    message.author.name+'#'+message.author.discriminator,
+                                                    message.author.id)
 
                     if success:
                         await message.channel.send('Successfully set announcement channel.')
@@ -66,8 +67,13 @@ async def action(**kwargs):
                     level = split_content[3]
 
                     if level in ['ignore', 'notify', 'ban']:
-                        bcm.set_pool_level(message.guild.id, pool_name, level,
-                                           message.author.name+message.author.discriminator, message.author.id)
+                        success = bcm.set_pool_level(message.guild.id, pool_name, level,
+                                                     message.author.name+'#'+message.author.discriminator,
+                                                     message.author.id)
+                        if success:
+                            await message.channel.send(f'Successfully set the pool **{pool_name}** to the level **{level}**')
+                        else:
+                            await message.channel.send('Unable to set the pool level.')
                     else:
-                        await message.channel.send('Unable to set pool level, please select between "ignore, notify, or ban"')
+                        await message.channel.send('Unable to set pool level, please select between: **ignore**, **notify**, **ban**')
 

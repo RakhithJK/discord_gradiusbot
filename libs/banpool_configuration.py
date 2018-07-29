@@ -64,12 +64,14 @@ class BanpoolConfigManager:
                     target_pool.sub_level = level
                     session.add(target_pool)
                     session.commit()
+                    return True
 
                 else:
                     new_pool = PoolSubscription(banpool_config_id=target_config.id, pool_name=pool_name,
                                                 sub_level=level)
                     session.add(new_pool)
                     session.commit()
+                    return True
             else:
                 # create the new server coniguration
                 new_server = BanpoolConfig(server_id=server_id, last_edit_date=now, last_edit_author=author,
@@ -82,9 +84,11 @@ class BanpoolConfigManager:
                                             sub_level=level)
                 session.add(new_pool)
                 session.commit()
+                return True
 
         except:
             logger.error(traceback.format_exc())
+            return False
 
     def get_pool_level(self, server_id, pool_name):
         try:
