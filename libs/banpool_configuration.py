@@ -103,6 +103,14 @@ class BanpoolConfigManager:
         except:
             logger.error(traceback.format_exc())
 
+    def get_configured_pools(self, server_id):
+        pool_config = session.query(BanpoolConfig).filter(BanpoolConfig.server_id==server_id).first()
+
+        if pool_config:
+            return pool_config.subscriptions
+        else:
+            return None
+
 
 class BanpoolConfig(Base):
     __tablename__ = 'banpoolconfig'

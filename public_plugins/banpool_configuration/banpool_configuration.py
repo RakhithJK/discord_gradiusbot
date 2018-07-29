@@ -1,6 +1,8 @@
 import asyncio
 import logging
+from discord import Embed, Color
 from libs.banpool_configuration import BanpoolConfigManager
+from libs.banpool import BanPoolManager
 
 # Setup Logging
 logger = logging.getLogger('banpool_configuration')
@@ -18,6 +20,7 @@ logger.addHandler(fh)
 logger.info("[Public Plugin] <banpool_configuration.py>: This plugin configures the banpool.")
 
 bcm = BanpoolConfigManager()
+bpm = BanPoolManager()
 
 help_string = """
 Test help string.
@@ -38,6 +41,23 @@ async def action(**kwargs):
             if len(split_content) == 2:
                 if split_content[1] == 'help':
                     await message.channel.send(help_string)
+
+                if split_content[1] == 'banpool-list':
+                    bp_list = bpm.banpool_list()
+
+                    bp_embed = Embed(title="Active BanPools", color=Color.green())
+
+                    for bp in bp_list:
+                        bp_embed.add_field(name=bp.pool_name, value=bp.pool_description, inline=False)
+                    await message.channel.send(embed=bp_embed)
+
+                if split_content[1] == 'configured-pools':
+                    pool_list = bcm.get_configured_pools(message.guild.id)
+                    bp_embed = Embed(title="Configured BanPools", color=Color.green())
+
+                    for bp in pool_list:
+                        bp_embed.add_field(name=bp.pool_name, value=bp.sub_level, inline=False)
+                    await message.channel.send(embed=bp_embed)
 
                 # User is setting the announcement channel
                 if split_content[1] == 'set-announce-chan':

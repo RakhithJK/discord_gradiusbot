@@ -118,8 +118,24 @@ async def action(**kwargs):
                         bp_embed = Embed(title="Active BanPools", color=Color.green())
 
                         for bp in banpool_list:
-                            bp_embed.add_field(name=bp.pool_name, value=bp.pool_description, inline=True)
+                            bp_embed.add_field(name=bp.pool_name, value=bp.pool_description, inline=False)
                         await channel.send(embed=bp_embed)
+
+                    if split_content[1] == 'addpool' and len(split_content) >= 4:
+                        pool_name = split_content[2]
+                        pool_description = ' '.join(split_content[3:])
+                        result = banpool_manager.create_banpool(pool_name, pool_description)
+
+                        if result[1]:
+                            notice_embed = Embed(title="BanPool Manager", color=Color.green(), description=result[0])
+                        else:
+                            # The add was not successful
+                            notice_embed = Embed(title="BanPool Manager", color=Color.red(), description=result[0])
+
+                        await message.channel.send(embed=notice_embed)
+
+                    if split_content[1] == 'removepool' and len(split_content) == 3:
+                        pass
 
                     if split_content[1] == 'listusers' and len(split_content) == 3:
                         banpool_name = split_content[2]
