@@ -135,6 +135,7 @@ async def action(**kwargs):
                         await message.channel.send(embed=notice_embed)
 
                     if split_content[1] == 'removepool' and len(split_content) == 3:
+                        # TODO: implement
                         pass
 
                     if split_content[1] == 'listusers' and len(split_content) == 3:
